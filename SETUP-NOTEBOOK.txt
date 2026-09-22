@@ -1,0 +1,61 @@
+=== PASO 0: chequear que tengas las herramientas ===
+Corre esto primero:
+
+php -v
+composer -V
+node -v
+
+Si las 3 tiran version (no "no se reconoce el comando"), segui al PASO 1.
+Si te falta algo:
+- Node: bajalo de https://nodejs.org (version LTS, "Siguiente" a todo).
+- PHP: bajalo de https://windows.php.net/download/ (thread safe, x64) o
+  instala XAMPP de https://www.apachefriends.org (trae PHP adentro, en
+  C:\xampp\php\php.exe) y agregalo al PATH, o corre los comandos de abajo
+  apuntando directo a esa ruta en vez de "php" solo.
+- Composer: bajalo de https://getcomposer.org/Composer-Setup.exe
+  (el instalador te pide la ruta de php.exe, se lo das y listo).
+
+=== PASO 1: clonar el repo ===
+
+git clone https://github.com/GonzaloDeAndrade/focus-poc.git
+cd focus-poc
+
+=== PASO 2: levantar el backend (Laravel) ===
+
+cd server
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+
+Dejalo corriendo. Backend en http://localhost:8000
+
+=== PASO 3: levantar el frontend (React), en OTRA terminal ===
+
+cd focus-poc/client
+npm install
+npm run dev
+
+Dejalo corriendo. Abri http://localhost:5173 en el navegador.
+Usuario: cualquiera. PIN: 1234
+
+=== SI "composer install" TIRA ERROR DE SSL/CERTIFICADO ===
+(mensaje tipo "SSL certificate problem" o "certificate verify failed")
+
+Es un antivirus haciendo inspeccion SSL + certificados viejos, no es el
+proyecto. Bajate un cacert.pem fresco y usalo asi (PowerShell):
+
+Invoke-WebRequest https://curl.se/ca/cacert.pem -OutFile cacert.pem
+php -d curl.cainfo="$PWD\cacert.pem" -d openssl.cafile="$PWD\cacert.pem" -r "echo 'ok';"
+
+Y despues corres composer con esos mismos flags:
+
+composer -d curl.cainfo="$PWD\cacert.pem" -d openssl.cafile="$PWD\cacert.pem" install
+
+Si sigue sin andar, mandame el error exacto.
+
+=== PARA PROBAR OFFLINE DESDE EL CELU (con la notebook como servidor) ===
+Una vez que el backend y el frontend esten corriendo (PASO 2 y 3), avisame
+y repetimos ahi el truco de los tuneles de Cloudflare, pero corriendolo
+en la notebook.
