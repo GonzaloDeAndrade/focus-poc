@@ -1,0 +1,7 @@
+.DS_Store
+Thumbs.db
+*.log
+
+# Herramienta de instalacion descargada a mano en esta maquina (no es
+# parte del proyecto, cada dev baja la suya desde getcomposer.org)
+server/composer.phar
